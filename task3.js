@@ -1,46 +1,57 @@
-let author = document.querySelector('.name');
-let btn = document.querySelector('.btn');
-let text = document.querySelector('.text');
-let btn2 = document.querySelector('.history');
+const authorInput = document.getElementById("author");
+const messageInput = document.getElementById("message");
+const sendBtn = document.querySelector(".btn");
+
 
 class Message {
-    constructor(time) {
-        this.authorName = author.value;
-        this.time = time;
-        this.text = text.value;
-    }
-    toString() {
-        return this.time + ' ' + author.value + ': ' + text.value;
-    }
+  constructor(sender, content) {
+    this.sender = sender;
+    this.date = gettime();
+    this.content = content;
+  }
+
+  toString() {
+    return `${this.date} ${this.sender}: ${this.content}`;
+  }
+
+  toHtml() {
+    return `<p>${this.date} ${this.sender}: ${this.content}</p></b>`;
+  }
 }
+
 class Messenger {
-    static messageHistory = []
-    send() {
-        const time = new Date()
-        const current = time.getHours() + ":" + time.getMinutes();
-        const mesaj = new Message(current)
-        const text = mesaj.toString()
-    
-        Messenger.messageHistory.push(text);
-        console.log(text);
-    }
-    show_histroy() {
-        Messenger.messageHistory.forEach((item) => {
-            console.log(item);
-        })
-    }
+  constructor() {
+    this.history = [];
+    this.historyelement = document.querySelector(`.history`);
+  }
+
+  show_history() {
+    this.history.forEach((message) => {
+      console.log(message.toString());
+    });
+  }
+
+  send(author, text) {
+    const message = new Message(author, text);
+    this.history.push(message);
+    const p = document.createElement("p");
+    p.innerHTML = message.toHtml();
+    this.historyelement.appendChild(p);
+  }
 }
 
-let messenger = new Messenger();
-btn.addEventListener('click',(e)=>{
-    e.preventDefault()
+function gettime() {
+  let now = new Date();
+  return `${now.getHours()}:${now.getMinutes()}`;
+}
 
-    messenger.send();
-})
+let messenger = new Messenger("messenger");
 
-btn2.addEventListener('click',(e)=>{
-    e.preventDefault();
+sendBtn.addEventListener("click", () => {
+  const author = authorInput.value;
+  const message = messageInput.value;
+  authorInput.value = "";
+  messageInput.value = "";
+  messenger.send(author, message);
+});
 
-    messenger.show_histroy();
-
-})
